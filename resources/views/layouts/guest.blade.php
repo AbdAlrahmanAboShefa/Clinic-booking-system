@@ -8,6 +8,63 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
         <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .iti-phone {
+                width: 100%;
+            }
+            .iti {
+                position: relative;
+                display: block;
+            }
+            .iti__tel-input {
+                width: 100%;
+                padding-left: 40px !important;
+            }
+            .iti__flag-container {
+                left: 10px !important;
+            }
+            .phone-input-wrapper {
+                position: relative;
+            }
+            .phone-icon {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 1;
+                pointer-events: none;
+            }
+            .iti__country-list {
+                position: absolute;
+                z-index: 2;
+                list-style: none;
+                text-align: left;
+                padding: 0;
+                margin: 0 0 0 -1px;
+                box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
+                background-color: white;
+                border: 1px solid #ccc;
+                white-space: nowrap;
+                max-height: 200px;
+                overflow-y: scroll;
+            }
+            .iti__country {
+                padding: 8px 12px;
+                cursor: pointer;
+            }
+            .iti__country:hover {
+                background-color: #f3f4f6;
+            }
+            .iti__dial-code {
+                color: #6b7280;
+            }
+            .iti__country-name {
+                color: #374151;
+            }
+            .iti--separate-dial-code .iti__selected-dial-code {
+                margin-left: 6px;
+            }
+        </style>
         <script>
             tailwind.config = {
                 darkMode: 'class',
@@ -88,5 +145,6 @@
                 animation-delay: 4s;
             }
         </style>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </body>
 </html>

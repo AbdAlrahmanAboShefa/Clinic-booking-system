@@ -22,15 +22,29 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index')->middleware('permission:settings.manage');
+    Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware('permission:settings.manage');
+    Route::get('/notifications/{id}/read', function (string $id) {
+    $notification = Auth::user()->notifications()->findOrFail($id);
+    $notification->markAsRead();
+    $appointmentId = $notification->data['appointment_id'] ?? null;
+    return $appointmentId
+        ? redirect()->route('appointments.show', $appointmentId)
+        : back();
+})->name('notifications.read');
 
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
-
+Route::post('/notifications/mark-all-read', function () {
+    Auth::user()->unreadNotifications->markAsRead();
+    return back();
+})->name('notifications.markAllRead');
     Route::get('/patient/profile/create', [PatientController::class, 'createProfile'])->name('patient.profile.create');
     Route::post('/patient/profile', [PatientController::class, 'storeProfile'])->name('patient.profile.store');
     Route::get('/patient/profile/edit', [PatientController::class, 'editProfile'])->name('patient.profile.edit');
     Route::patch('/patient/profile', [PatientController::class, 'updateProfile'])->name('patient.profile.update');
-
+Route::get('/appointments/report/pdf', [AppointmentController::class, 'downloadReport'])
+    ->name('appointments.report.pdf')
+    ->middleware('role:admin');
     Route::resource('patients', PatientController::class)
         ->middleware('permission:patients.view');
 
@@ -71,6 +85,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/permissions/role/{role}/give', [PermissionController::class, 'givePermissionToRole'])->name('admin.permissions.role.give');
         Route::post('/admin/permissions/role/{role}/revoke', [PermissionController::class, 'revokePermissionFromRole'])->name('admin.permissions.role.revoke');
     });
+    // PDF لـ appointment واحد
+Route::get('/appointments/{appointment}/pdf', [AppointmentController::class, 'downloadPdf'])
+    ->name('appointments.pdf')
+    ->middleware('permission:appointments.view');
+
+// PDF تقرير كل الـ appointments (admin فقط)
+
 });
 
 require __DIR__.'/auth.php';

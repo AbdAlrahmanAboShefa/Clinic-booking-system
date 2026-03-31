@@ -47,7 +47,7 @@
     <body class="font-sans antialiased bg-gray-50 text-gray-900">
         <div class="min-h-screen flex">
             <!-- Sidebar -->
-            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
                 <div class="flex flex-col h-full">
                     <!-- Logo -->
                     <div class="flex items-center justify-center h-20 border-b border-gray-200 bg-gradient-to-r from-primary-600 to-blue-600">
@@ -107,24 +107,44 @@
                         @endif
 
                         <div class="pt-4 border-t border-gray-200">
-                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <a href="{{ Auth::user()->patient ? route('patient.profile.edit') : route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('profile.*') || request()->routeIs('patient.profile.*') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user-cog w-5 text-center"></i>
                                 <span class="font-medium">Profile</span>
                             </a>
                             
-                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gray-100">
+                            @can('settings.manage')
+                            <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-primary-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-cog w-5 text-center"></i>
                                 <span class="font-medium">Settings</span>
                             </a>
+                            @endcan
                         </div>
                     </nav>
-
+                    {{-- Bell في الـ Sidebar --}}
+<div x-data="{ open: false }" class="px-4 pb-2">
+    <button @click="open = !open"
+            class="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-all duration-200">
+        <i class="fas fa-bell w-5 text-center"></i>
+        <span class="font-medium">Notifications</span>
+        @if(Auth::user()->unreadNotifications->count() > 0)
+            <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {{ Auth::user()->unreadNotifications->count() > 9 ? '9+' : Auth::user()->unreadNotifications->count() }}
+            </span>
+        @endif
+    </button>
+    <div x-show="open" x-transition @click.outside="open = false"
+         class="mt-1 border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        @include('partials.notifications-dropdown')
+    </div>
+</div>
                     <!-- User Section -->
                     <div class="p-4 border-t border-gray-200">
                         <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-                            <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                {{ substr(Auth::user()->name, 0, 1) }}
-                            </div>
+                            <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary-500">
+    <img src="{{ Auth::user()->profile_photo_url }}"
+         class="w-full h-full object-cover"
+         alt="{{ Auth::user()->name }}">
+</div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
@@ -143,7 +163,7 @@
             <!-- Main Content -->
             <div class="flex-1 lg:ml-64">
                 <!-- Mobile Header -->
-                <header class="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4">
+                <header class="md:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4">
                     <button onclick="toggleSidebar()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
@@ -153,6 +173,11 @@
 
                 <!-- Page Content -->
                 <main class="p-4 lg:p-8">
+                    @yield('header')
+                    @isset($header)
+    {{ $header }}
+@endisset
+                    
                     @if(session('success'))
                         <x-flash-message type="success">
                             {{ session('success') }}
@@ -176,14 +201,14 @@
                             {{ session('info') }}
                         </x-flash-message>
                     @endif
-                    
                     @yield('content')
+                    {{ $slot ?? '' }}
                 </main>
             </div>
         </div>
 
         <!-- Mobile Overlay -->
-        <div class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+        <div class="fixed inset-0 bg-black/50 z-40 md:hidden hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
         <script>
             function toggleSidebar() {

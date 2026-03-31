@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Notifications\NewAppointmentForDoctor;
 use App\Notifications\AppointmentConfirmedForPatient;
 use App\Notifications\AppointmentCancelledNotification;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class AppointmentController extends Controller
 {
     public function index(Request $request)
@@ -286,5 +286,24 @@ class AppointmentController extends Controller
     }
 
     return response()->json($slots);
+}
+public function downloadPdf(Appointment $appointment): \Illuminate\Http\Response
+{
+    $pdf = Pdf::loadView('appointments.pdf.receipt', compact('appointment'));
+    return $pdf->download("appointment-{$appointment->id}.pdf");
+}
+
+public function downloadReport(Request $request): \Illuminate\Http\Response
+{
+    $appointments = Appointment::with(['patient', 'doctor.user'])
+        ->when($request->date, fn($q) => $q->whereDate('appointment_date', $request->date))
+        ->when($request->date_from, fn($q) => $q->whereDate('appointment_date', '>=', $request->date_from))
+        ->when($request->date_to, fn($q) => $q->whereDate('appointment_date', '<=', $request->date_to))
+        ->when($request->status, fn($q) => $q->where('status', $request->status))
+        ->orderBy('appointment_date')
+        ->get();
+
+    $pdf = Pdf::loadView('appointments.pdf.report', compact('appointments', 'request'));
+    return $pdf->download("appointments-report-" . now()->format('Y-m-d') . ".pdf");
 }
 }

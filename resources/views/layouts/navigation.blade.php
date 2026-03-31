@@ -52,10 +52,12 @@
                         </button>
                     </x-slot>
                     <x-slot name="content">
+                        @can('settings.manage')
                         <x-dropdown-link :href="route('settings.index')">
                             {{ __('Settings') }}
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
+                        @endcan
+                        <x-dropdown-link :href="Auth::user()->patient ? route('patient.profile.edit') : route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
                         <form method="POST" action="{{ route('logout') }}">
@@ -111,10 +113,12 @@
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
             <div class="mt-3 space-y-1">
+                @can('settings.manage')
                 <x-responsive-nav-link :href="route('settings.index')">
                     {{ __('Settings') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('profile.edit')">
+                @endcan
+                <x-responsive-nav-link :href="Auth::user()->patient ? route('patient.profile.edit') : route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">

@@ -41,6 +41,13 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Access denied'
                 ], 403);
             }
+            return response()->view('errors.403', ['exception' => $e], 403);
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 403 && !$request->is('api/*')) {
+                return response()->view('errors.403', ['exception' => $e], 403);
+            }
         });
 
         $exceptions->render(function (\Illuminate\Auth\Access\AuthorizationException $e, Request $request) {

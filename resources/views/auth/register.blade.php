@@ -37,14 +37,48 @@
 
         <!-- Phone -->
         <div>
-            <x-input-label for="phone" :value="__('Phone Number')" class="text-gray-700 font-semibold" />
-            <div class="mt-1.5 relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
+            <x-input-label for="country_code" :value="__('Phone Number')" class="text-gray-700 font-semibold" />
+            <div class="mt-1.5 flex gap-2">
+                <div class="relative w-36">
+                    <select 
+                        id="country-code" 
+                        name="country_code"
+                        class="block w-full rounded-lg border-gray-300 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-primary-500 transition-colors appearance-none cursor-pointer pr-8"
+                    >
+                        <option value="963" {{ old('country_code', '963') == '963' ? 'selected' : '' }}>+963 🇸🇾</option>
+                        <option value="966" {{ old('country_code') == '966' ? 'selected' : '' }}>+966 🇸🇦</option>
+                        <option value="971" {{ old('country_code') == '971' ? 'selected' : '' }}>+971 🇦🇪</option>
+                        <option value="962" {{ old('country_code') == '962' ? 'selected' : '' }}>+962 🇯🇴</option>
+                        <option value="961" {{ old('country_code') == '961' ? 'selected' : '' }}>+961 🇱🇧</option>
+                        <option value="20" {{ old('country_code') == '20' ? 'selected' : '' }}>+20 🇪🇬</option>
+                        <option value="972" {{ old('country_code') == '972' ? 'selected' : '' }}>+972 🇮🇱</option>
+                        <option value="1" {{ old('country_code') == '1' ? 'selected' : '' }}>+1 🇺🇸</option>
+                        <option value="44" {{ old('country_code') == '44' ? 'selected' : '' }}>+44 🇬🇧</option>
+                        <option value="33" {{ old('country_code') == '33' ? 'selected' : '' }}>+33 🇫🇷</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
-                <x-text-input id="phone" class="block pl-10 w-full rounded-lg border-gray-300 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-primary-500 transition-colors" type="tel" name="phone" :value="old('phone')" required autocomplete="tel" placeholder="0555123456" />
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                    </div>
+                    <input 
+                        id="phone" 
+                        type="tel" 
+                        name="phone"
+                        value="{{ old('phone') }}"
+                        autocomplete="tel" 
+                        required
+                        class="block w-full pl-10 rounded-lg border-gray-300 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-primary-500 transition-colors"
+                        placeholder="999 123 456"
+                    />
+                </div>
             </div>
             <x-input-error :messages="$errors->get('phone')" class="mt-2 text-red-500 text-sm" />
         </div>

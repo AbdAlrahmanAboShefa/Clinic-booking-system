@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'whatsapp' => [
+    'driver'            => env('WHATSAPP_DRIVER', 'ultramsg'),
+    'ultramsg_instance' => env('ULTRAMSG_INSTANCE'),
+    'ultramsg_token'    => env('ULTRAMSG_TOKEN'),
+],
 
 ];

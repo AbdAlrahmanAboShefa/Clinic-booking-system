@@ -83,7 +83,12 @@
                         </tbody>
                     </table>
                 </div>
-
+@role('admin')
+<a href="{{ route('appointments.report.pdf', request()->query()) }}"
+   class="btn-secondary" target="_blank">
+    <i class="fas fa-file-pdf mr-2 text-red-500"></i> Export PDF
+</a>
+@endrole
                 <div class="mt-4">
                     {{ $appointments->links() }}
                 </div>

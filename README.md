@@ -35,7 +35,7 @@ A full-featured clinic management and appointment booking platform built with **
 
 | Layer | Technology |
 |---|---|
-| Backend | Laravel 11 |
+| Backend | Laravel 12 |
 | Database | MySQL |
 | Frontend | Blade + Tailwind CSS |
 | Auth | Laravel Breeze |

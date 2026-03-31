@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasRoles, LogsActivity;
 
@@ -74,4 +77,19 @@ class User extends Authenticatable
     {
         return [$this->email];
     }
+    public function routeNotificationForWhatsapp(): ?string
+{
+    return $this->phone;
+}
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
+    public function getProfilePhotoUrlAttribute(): string
+{
+    return $this->profile_photo
+        ? Storage::url($this->profile_photo)
+        : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=2563eb&color=fff';
+}
 }

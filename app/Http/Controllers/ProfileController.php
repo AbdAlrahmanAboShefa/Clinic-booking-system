@@ -8,9 +8,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
+    public function updatePhoto(Request $request): RedirectResponse
+{
+    $request->validate([
+        'profile_photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+    ]);
+
+    $user = $request->user();
+
+    // احذف الصورة القديمة
+    if ($user->profile_photo) {
+        Storage::disk('public')->delete($user->profile_photo);
+    }
+
+    $path = $request->file('profile_photo')->store('avatars', 'public');
+    $user->update(['profile_photo' => $path]);
+
+    return back()->with('status', 'photo-updated');
+}
     /**
      * Display the user's profile form.
      */

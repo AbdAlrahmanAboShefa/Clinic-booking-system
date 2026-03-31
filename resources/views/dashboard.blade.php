@@ -2,7 +2,9 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Stats Cards -->
+
+    {{-- Admin/Staff Stats --}}
+    @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('staff'))
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
@@ -15,7 +17,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div>
@@ -27,7 +29,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div>
@@ -39,7 +41,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <div>
@@ -52,8 +54,105 @@
             </div>
         </div>
     </div>
+    @endif
 
-    <!-- Today's Appointments -->
+    {{-- Doctor Stats --}}
+    @if(Auth::user()->hasRole('doctor'))
+    @php $doctor = Auth::user()->doctor; @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">My Today's Appointments</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('doctor_id', $doctor->id)->where('appointment_date', today())->count() }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-day text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Pending</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('doctor_id', $doctor->id)->where('status', 'pending')->count() }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total My Patients</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('doctor_id', $doctor->id)->distinct('patient_id')->count('patient_id') }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Patient Stats --}}
+    @if(Auth::user()->hasRole('patient'))
+    @php $patient = Auth::user()->patient; @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">My Appointments</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('patient_id', $patient->id)->count() }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Upcoming</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('patient_id', $patient->id)->where('appointment_date', '>=', today())->where('status', 'confirmed')->count() }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Pending</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        {{ \App\Models\Appointment::where('patient_id', $patient->id)->where('status', 'pending')->count() }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Today's Appointments Table --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-5 border-b border-gray-100">
             <div class="flex items-center justify-between">
@@ -61,15 +160,21 @@
                 <span class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</span>
             </div>
         </div>
-        
+
         @php
-            $todayAppointments = \App\Models\Appointment::with(['patient', 'doctor.user'])
+            $query = \App\Models\Appointment::with(['patient', 'doctor.user'])
                 ->where('appointment_date', today())
-                ->orderBy('start_time')
-                ->limit(10)
-                ->get();
+                ->orderBy('start_time');
+
+            if (Auth::user()->hasRole('doctor')) {
+                $query->where('doctor_id', Auth::user()->doctor->id);
+            } elseif (Auth::user()->hasRole('patient')) {
+                $query->where('patient_id', Auth::user()->patient->id);
+            }
+
+            $todayAppointments = $query->limit(10)->get();
         @endphp
-        
+
         @if($todayAppointments->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
@@ -90,7 +195,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $appointment->doctor->user->name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $appointment->type }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     @switch($appointment->status)
                                         @case('confirmed') bg-green-100 text-green-800 @break
                                         @case('pending') bg-yellow-100 text-yellow-800 @break

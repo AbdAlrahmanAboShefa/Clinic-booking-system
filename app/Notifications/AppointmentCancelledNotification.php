@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Channels\WhatsAppChannel;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -15,25 +16,33 @@ class AppointmentCancelledNotification extends Notification implements ShouldQue
     public function __construct(public Appointment $appointment) {}
 
     public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+{
+    return [ 'whatsapp', 'database'];
+}
 
-    public function toMail(object $notifiable): MailMessage
+public function toArray(object $notifiable): array
+{
+    return [
+        'message' => "❌ تم إلغاء موعدك مع د. {$this->appointment->doctor->user->name}",
+        'appointment_id' => $this->appointment->id,
+        'date' => $this->appointment->appointment_date,
+        'time' => $this->appointment->start_time . ' - ' . $this->appointment->end_time,
+        'reason' => $this->appointment->cancellation_reason,
+    ];
+}
+
+    public function toWhatsApp(object $notifiable): string
     {
-        $message = (new MailMessage)
-            ->subject('Appointment Cancelled')
-            ->line("Your appointment has been cancelled.")
-            ->line("Original Date: {$this->appointment->appointment_date}")
-            ->line("Original Time: {$this->appointment->start_time} - {$this->appointment->end_time}")
-            ->line("Doctor: {$this->appointment->doctor->user->name}");
+        $message = "❌ *تم إلغاء موعدك*\n\n"
+            . "مرحباً {$notifiable->name}،\n\n"
+            . "📅 التاريخ: {$this->appointment->appointment_date}\n"
+            . "⏰ الوقت: {$this->appointment->start_time} - {$this->appointment->end_time}\n"
+            . "👨‍⚕️ الطبيب: د. {$this->appointment->doctor->user->name}\n";
 
         if ($this->appointment->cancellation_reason) {
-            $message->line("Reason: {$this->appointment->cancellation_reason}");
+            $message .= "📝 السبب: {$this->appointment->cancellation_reason}\n";
         }
 
-        return $message
-            ->line("Please book a new appointment if needed.")
-            ->action('Book New Appointment', url('/appointments/create'));
+        return $message . "\nيمكنك حجز موعد جديد من التطبيق 📱";
     }
 }

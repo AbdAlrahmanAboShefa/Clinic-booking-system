@@ -2,11 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Channels\WhatsAppChannel;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
+
 class NewAppointmentForDoctor extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -14,17 +16,26 @@ class NewAppointmentForDoctor extends Notification implements ShouldQueue
     public function __construct(public Appointment $appointment) {}
 
     public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+{
+    return [ 'whatsapp', 'database']; // أو أضفها لـ array موجود
+}
 
-    public function toMail(object $notifiable): MailMessage
+public function toArray(object $notifiable): array
+{
+    return [
+        'message' => "📅 حجز موعد جديد من {$this->appointment->patient->first_name}",
+        'appointment_id' => $this->appointment->id,
+        'date' => $this->appointment->appointment_date,
+        'time' => $this->appointment->start_time . ' - ' . $this->appointment->end_time,
+    ];
+}
+    public function toWhatsApp(object $notifiable): string
     {
-        return (new MailMessage)
-            ->subject('New Appointment Booked')
-            ->line("You have a new appointment on {$this->appointment->appointment_date}")
-            ->line("Time: {$this->appointment->start_time} - {$this->appointment->end_time}")
-            ->line("Patient: {$this->appointment->patient->full_name}")
-            ->action('View Appointment', url('/appointments/' . $this->appointment->id));
+        return "📋 *موعد جديد*\n\n"
+            . "د. {$notifiable->name}،\n\n"
+            . "لديك موعد جديد:\n"
+            . "👤 المريض: {$this->appointment->patient->full_name}\n"
+            . "📅 التاريخ: {$this->appointment->appointment_date}\n"
+            . "⏰ الوقت: {$this->appointment->start_time} - {$this->appointment->end_time}";
     }
 }

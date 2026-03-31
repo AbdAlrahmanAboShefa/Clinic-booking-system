@@ -6,6 +6,7 @@
         <meta name="description" content="Book appointments online at our clinic. Easy scheduling, experienced doctors, quality healthcare.">
         <title>{{ config('app.name', 'Clinic Booking') }} - Your Health, Our Priority</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
         <script>
             tailwind.config = {
                 darkMode: 'class',

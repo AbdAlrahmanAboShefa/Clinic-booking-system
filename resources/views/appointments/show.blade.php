@@ -81,7 +81,10 @@
                         <a href="{{ route('appointments.edit', $appointment) }}" class="btn-secondary">Edit Appointment</a>
                         @endif
                     @endcan
-
+<a href="{{ route('appointments.pdf', $appointment) }}"
+   class="btn-secondary" target="_blank">
+    <i class="fas fa-file-pdf mr-2 text-red-500"></i> Download PDF
+</a>
                     <a href="{{ route('appointments.index') }}" class="btn-secondary">Back to List</a>
                 </div>
             </div>
