@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             SpecializationSeeder::class,
         ]);
 
-        $admin = User::create([
+        $admin = User::firstorcreate([
             'name' => 'Admin',
             'email' => 'admin@clinic.com',
             'password' => Hash::make('password'),
@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
-        $doctor = User::create([
+        $doctor = User::firstorcreate([
             'name' => 'Dr. Smith',
             'email' => 'doctor@clinic.com',
             'password' => Hash::make('password'),
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $doctor->assignRole('doctor');
 
-        $staff = User::create([
+        $staff = User::firstorcreate([
             'name' => 'Staff Member',
             'email' => 'staff@clinic.com',
             'password' => Hash::make('password'),
@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $staff->assignRole('staff');
 
-        $patient = User::create([
+        $patient = User::firstorcreate([
             'name' => 'Patient User',
             'email' => 'patient@clinic.com',
             'password' => Hash::make('password'),
